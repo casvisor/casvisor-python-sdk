@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import json
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 from .base import BaseClient
 from . import util
 
@@ -84,13 +84,13 @@ class _RecordSDK:
         bytes = self.base_client.do_get_bytes(url)
         return Record.from_dict(json.loads(bytes))
 
-    def get_pagination_records(self, p: int, page_size: int, query_map: Dict[str, str]) -> tuple[List[Record], int]:
+    def get_pagination_records(self, p: int, page_size: int, query_map: Dict[str, str]) -> Tuple[List[Record], int]:
         query_map["owner"] = self.organization_name
         query_map["p"] = str(p)
         query_map["page_size"] = str(page_size)
         url = util.get_url(self.base_client.endpoint, "get-records", query_map)
         response = self.base_client.do_get_response(url)
-        return [Record.from_dict(record) for record in response["data"]], response["data2"]
+        return [Record.from_dict(record) for record in response.data], response.data2
 
     def update_record(self, record: Record) -> bool:
         _, affected = self.modify_record("update-record", record, None)

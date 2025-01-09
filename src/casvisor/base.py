@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import json
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Tuple
 import requests
 from . import util
 
@@ -88,7 +88,7 @@ class BaseClient:
         resp = client.get(url, headers=headers)
         return resp.content
 
-    def prepare_body(self, post_bytes: bytes, is_form: bool, is_file: bool) -> tuple[str, bytes]:
+    def prepare_body(self, post_bytes: bytes, is_form: bool, is_file: bool) -> Tuple[str, bytes]:
         if is_form:
             if is_file:
                 return util.create_form_file({"file": post_bytes})
