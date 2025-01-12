@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#	http://www.apache.org/licenses/LICENSE-2.0
+# 	http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,12 +22,16 @@ class HttpClient:
     def do(self, request):
         pass
 
+
 class Response:
-    def __init__(self, status: str, msg: str, data: Union[Dict, List], data2: Union[Dict, List]):
+    def __init__(
+        self, status: str, msg: str, data: Union[Dict, List], data2: Union[Dict, List]
+    ):
         self.status = status
         self.msg = msg
         self.data = data
         self.data2 = data2
+
 
 # Global HTTP client
 client = requests.Session()
@@ -49,7 +53,9 @@ class BaseClient:
         response = json.loads(resp_bytes)
         if response["status"] != "ok":
             raise Exception(response["msg"])
-        return Response(response["status"], response["msg"], response["data"], response["data2"])
+        return Response(
+            response["status"], response["msg"], response["data"], response["data2"]
+        )
 
     def do_get_bytes(self, url: str) -> bytes:
         response = self.do_get_response(url)
@@ -62,33 +68,42 @@ class BaseClient:
             raise Exception(response["msg"])
         return resp_bytes
 
-    def do_post(self, action: str, query_map: Dict[str, str], post_bytes: bytes, is_form: bool, is_file: bool) -> Response:
+    def do_post(
+        self,
+        action: str,
+        query_map: Dict[str, str],
+        post_bytes: bytes,
+        is_form: bool,
+        is_file: bool,
+    ) -> Response:
         url = util.get_url(self.endpoint, action, query_map)
         content_type, body = self.prepare_body(post_bytes, is_form, is_file)
         resp_bytes = self.do_post_bytes_raw(url, content_type, body)
         response = json.loads(resp_bytes)
         if response["status"] != "ok":
             raise Exception(response["msg"])
-        return Response(response["status"], response["msg"], response["data"], response["data2"])
+        return Response(
+            response["status"], response["msg"], response["data"], response["data2"]
+        )
 
     def do_post_bytes_raw(self, url: str, content_type: str, body: bytes) -> bytes:
         if not content_type:
             content_type = "text/plain;charset=UTF-8"
         headers = {
             "Content-Type": content_type,
-            "Authorization": f"Basic {self.client_id}:{self.client_secret}"
+            "Authorization": f"Basic {self.client_id}:{self.client_secret}",
         }
         resp = client.post(url, headers=headers, data=body)
         return resp.content
 
     def do_get_bytes_raw_without_check(self, url: str) -> bytes:
-        headers = {
-            "Authorization": f"Basic {self.client_id}:{self.client_secret}"
-        }
+        headers = {"Authorization": f"Basic {self.client_id}:{self.client_secret}"}
         resp = client.get(url, headers=headers)
         return resp.content
 
-    def prepare_body(self, post_bytes: bytes, is_form: bool, is_file: bool) -> Tuple[str, bytes]:
+    def prepare_body(
+        self, post_bytes: bytes, is_form: bool, is_file: bool
+    ) -> Tuple[str, bytes]:
         if is_form:
             if is_file:
                 return util.create_form_file({"file": post_bytes})
