@@ -1,0 +1,17 @@
+{
+    "name": "casvisor-python-sdk",
+    "version": "0.1.0",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/ljl66-66/casvisor-python-sdk.git"
+    },
+    "release": {
+      "branches": ["master"],
+      "plugins": [
+        "@semantic-release/commit-analyzer",
+        "@semantic-release/release-notes-generator",
+        "@semantic-release/github",
+        "semantic-release-pypi"
+      ]
+    }
+  } 
