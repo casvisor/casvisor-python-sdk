@@ -87,7 +87,6 @@ class TestRecord(unittest.TestCase):
         base_client = BaseClient(client_id, client_secret, endpoint)
         sdk = _RecordSDK(base_client, organization_name)
 
-        # 这个测试需要补充更多断言
         self.assertIsInstance(sdk, _RecordSDK)
 
     def test_get_records(self):
@@ -122,7 +121,7 @@ class TestRecord(unittest.TestCase):
                     "is_triggered": True,
                 }
             ],
-            "data2": [],  # 添加缺失的 data2 字段
+            "data2": [],
         }
 
         # Mock HTTP GET response
