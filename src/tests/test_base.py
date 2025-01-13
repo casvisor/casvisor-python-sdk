@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#	http://www.apache.org/licenses/LICENSE-2.0
+# 	http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@ import unittest
 import requests_mock
 from src.casvisor import BaseClient, Response
 
+
 class TestBaseClient(unittest.TestCase):
     def test_base_client_do_get_response_success(self):
         # Arrange
@@ -23,12 +24,7 @@ class TestBaseClient(unittest.TestCase):
         client_secret = "secret456"
         endpoint = "https://example.com"
         base_client = BaseClient(client_id, client_secret, endpoint)
-        mock_response = {
-            "status": "ok",
-            "msg": "Success",
-            "data": [],
-            "data2": []
-        }
+        mock_response = {"status": "ok", "msg": "Success", "data": [], "data2": []}
         url = f"{endpoint}/api/action"
 
         # Mock HTTP GET response
@@ -50,10 +46,7 @@ class TestBaseClient(unittest.TestCase):
         client_secret = "secret456"
         endpoint = "https://example.com"
         base_client = BaseClient(client_id, client_secret, endpoint)
-        mock_response = {
-            "status": "error",
-            "msg": "Something went wrong"
-        }
+        mock_response = {"status": "error", "msg": "Something went wrong"}
         url = f"{endpoint}/api/action"
 
         # Mock HTTP GET response
@@ -74,7 +67,7 @@ class TestBaseClient(unittest.TestCase):
             "status": "ok",
             "msg": "Success",
             "data": {"key": "value"},
-            "data2": []
+            "data2": [],
         }
         url = f"{endpoint}/api/action"
 
@@ -86,7 +79,7 @@ class TestBaseClient(unittest.TestCase):
 
         # Assert
         self.assertIsInstance(result, bytes)
-        self.assertEqual(result.decode('utf-8'), '{"key": "value"}')
+        self.assertEqual(result.decode("utf-8"), '{"key": "value"}')
 
     def test_do_post(self):
         # Arrange
@@ -98,18 +91,14 @@ class TestBaseClient(unittest.TestCase):
             "status": "ok",
             "msg": "Success",
             "data": "Affected",
-            "data2": []
+            "data2": [],
         }
-        
+
         # Act
         with requests_mock.Mocker() as m:
             m.post(f"{endpoint}/api/action", json=mock_response)
             response = base_client.do_post(
-                "action",
-                {"param": "value"},
-                b'{"test": "data"}',
-                False,
-                False
+                "action", {"param": "value"}, b'{"test": "data"}', False, False
             )
 
         # Assert
@@ -121,10 +110,10 @@ class TestBaseClient(unittest.TestCase):
         # Arrange
         client = BaseClient("id", "secret", "endpoint")
         post_bytes = b'{"field": "value"}'
-        
+
         # Act
         content_type, body = client.prepare_body(post_bytes, True, False)
-        
+
         # Assert
-        self.assertTrue(content_type.startswith('multipart/form-data'))
+        self.assertTrue(content_type.startswith("multipart/form-data"))
         self.assertIsInstance(body, bytes)

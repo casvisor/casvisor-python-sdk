@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#	http://www.apache.org/licenses/LICENSE-2.0
+# 	http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -69,22 +69,20 @@ class _RecordSDK:
         self.organization_name = organization_name
 
     def get_records(self) -> List[Record]:
-        query_map = {
-            "owner": self.organization_name
-        }
+        query_map = {"owner": self.organization_name}
         url = util.get_url(self.base_client.endpoint, "get-records", query_map)
         bytes = self.base_client.do_get_bytes(url)
         return [Record.from_dict(record) for record in json.loads(bytes)]
 
     def get_record(self, name: str) -> Record:
-        query_map = {
-            "id": f"{self.organization_name}/{name}"
-        }
+        query_map = {"id": f"{self.organization_name}/{name}"}
         url = util.get_url(self.base_client.endpoint, "get-record", query_map)
         bytes = self.base_client.do_get_bytes(url)
         return Record.from_dict(json.loads(bytes))
 
-    def get_pagination_records(self, p: int, page_size: int, query_map: Dict[str, str]) -> Tuple[List[Record], int]:
+    def get_pagination_records(
+        self, p: int, page_size: int, query_map: Dict[str, str]
+    ) -> Tuple[List[Record], int]:
         query_map["owner"] = self.organization_name
         query_map["p"] = str(p)
         query_map["page_size"] = str(page_size)
@@ -108,10 +106,10 @@ class _RecordSDK:
         _, affected = self.modify_record("delete-record", record, None)
         return affected
 
-    def modify_record(self, action: str, record: Record, columns: Optional[List[str]]) -> tuple[Dict, bool]:
-        query_map = {
-            "id": f"{record.owner}/{record.name}"
-        }
+    def modify_record(
+        self, action: str, record: Record, columns: Optional[List[str]]
+    ) -> Tuple[Dict, bool]:
+        query_map = {"id": f"{record.owner}/{record.name}"}
         if columns:
             query_map["columns"] = ",".join(columns)
         if not record.owner:

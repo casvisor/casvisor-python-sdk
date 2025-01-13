@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#	http://www.apache.org/licenses/LICENSE-2.0
+# 	http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,21 +13,20 @@
 # limitations under the License.
 
 
-from io import BytesIO
 from requests_toolbelt.multipart.encoder import MultipartEncoder
-from typing import Dict
+from typing import Dict, Tuple
 
 
 def get_url(base_url: str, action: str, query_map: Dict[str, str]) -> str:
     query = "&".join([f"{k}={v}" for k, v in query_map.items()])
     return f"{base_url}/api/{action}?{query}"
 
-def create_form_file(form_data: Dict[str, bytes]) -> tuple[str, bytes]:
-    body = BytesIO()
+
+def create_form_file(form_data: Dict[str, bytes]) -> Tuple[str, bytes]:
     encoder = MultipartEncoder(fields={k: ("file", v) for k, v in form_data.items()})
     return encoder.content_type, encoder.to_string()
 
-def create_form(form_data: Dict[str, str]) -> tuple[str, bytes]:
-    body = BytesIO()
+
+def create_form(form_data: Dict[str, str]) -> Tuple[str, bytes]:
     encoder = MultipartEncoder(fields=form_data)
     return encoder.content_type, encoder.to_string()
