@@ -43,9 +43,9 @@ def set_http_client(http_client: HttpClient):
 
 
 class BaseClient:
-    def __init__(self, client_id: str, client_secret: str, endpoint: str):
-        self.client_id = client_id
-        self.client_secret = client_secret
+    def __init__(self, clientId: str, clientSecret: str, endpoint: str):
+        self.clientId = clientId
+        self.clientSecret = clientSecret
         self.endpoint = endpoint
 
     def do_get_response(self, url: str) -> Response:
@@ -89,16 +89,15 @@ class BaseClient:
     def do_post_bytes_raw(self, url: str, content_type: str, body: bytes) -> bytes:
         if not content_type:
             content_type = "text/plain;charset=UTF-8"
-        headers = {
-            "Content-Type": content_type,
-            "Authorization": f"Basic {self.client_id}:{self.client_secret}",
-        }
-        resp = client.post(url, headers=headers, data=body)
+
+        headers = {"Content-Type": content_type}
+        resp = client.post(
+            url, headers=headers, data=body, auth=(self.clientId, self.clientSecret)
+        )
         return resp.content
 
     def do_get_bytes_raw_without_check(self, url: str) -> bytes:
-        headers = {"Authorization": f"Basic {self.client_id}:{self.client_secret}"}
-        resp = client.get(url, headers=headers)
+        resp = client.get(url, auth=(self.clientId, self.clientSecret))
         return resp.content
 
     def prepare_body(
