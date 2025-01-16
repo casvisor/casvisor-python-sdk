@@ -1,9 +1,9 @@
 {
     "name": "casvisor-python-sdk",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/ljl66-66/casvisor-python-sdk.git"
+        "url": "https://github.com/casvisor/casvisor-python-sdk.git"
     },
     "release": {
         "branches": [
@@ -12,14 +12,24 @@
         "plugins": [
             "@semantic-release/commit-analyzer",
             "@semantic-release/release-notes-generator",
+            "semantic-release-pypi",
+            "@semantic-release/github",
             [
-                "@semantic-release/github",
+                "@semantic-release/changelog",
                 {
-                    "successComment": false,
-                    "failComment": false,
-                    "failTitle": false,
-                    "releasedLabels": false,
-                    "addReleases": "bottom"
+                    "changelogFile": "CHANGELOG.md",
+                    "changelogTitle": "# Semantic Versioning Changelog"
+                }
+            ],
+            [
+                "@semantic-release/git",
+                {
+                    "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
+                    "assets": [
+                        "CHANGELOG.md",
+                        "setup.py",
+                        "setup.cfg"
+                    ]
                 }
             ]
         ]

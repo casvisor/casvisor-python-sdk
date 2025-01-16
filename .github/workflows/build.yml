@@ -54,7 +54,7 @@ jobs:
       - name: Setup semantic-release
         run: |
           npm init -y
-          npm install -g semantic-release @semantic-release/github @semantic-release/commit-analyzer @semantic-release/release-notes-generator
+          npm install -g semantic-release @semantic-release/github @semantic-release/changelog @semantic-release/commit-analyzer @semantic-release/git @semantic-release/release-notes-generator semantic-release-pypi
       
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -67,5 +67,5 @@ jobs:
       - name: Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: npx semantic-release 
