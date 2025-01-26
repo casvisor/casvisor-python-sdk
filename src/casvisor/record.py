@@ -14,8 +14,9 @@
 
 import json
 from typing import Dict, List, Optional, Tuple
-from .base import BaseClient, Response
+
 from . import util
+from .base import BaseClient, Response
 
 
 class Record:

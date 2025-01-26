@@ -13,13 +13,14 @@
 # limitations under the License.
 
 import unittest
+
 from src.casvisor import BaseClient, CasvisorSDK
 from src.tests.test_util import (
-    TestEndpoint,
+    TestApplication,
     TestClientId,
     TestClientSecret,
+    TestEndpoint,
     TestOrganization,
-    TestApplication,
 )
 
 

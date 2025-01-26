@@ -13,9 +13,11 @@
 # limitations under the License.
 
 import unittest
+
 import requests_mock
+
 from src.casvisor import BaseClient, Response
-from src.tests.test_util import TestEndpoint, TestClientId, TestClientSecret
+from src.tests.test_util import TestClientId, TestClientSecret, TestEndpoint
 
 
 class TestBaseClient(unittest.TestCase):

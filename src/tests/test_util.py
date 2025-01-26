@@ -20,10 +20,12 @@ TestClientSecret = "124140638b4f9de7e78e79ba22d451c17bfa9688"
 TestOrganization = "casbin"
 TestApplication = "app-casvisor"
 
+
 def get_random_code(length):
     std_nums = "0123456789"
     result = "".join(random.choice(std_nums) for _ in range(length))
     return result
+
 
 def get_random_name(prefix):
     return f"{prefix}_{get_random_code(6)}"

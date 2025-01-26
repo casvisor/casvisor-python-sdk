@@ -2,9 +2,9 @@ name: build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, Fix-CI-errors ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, Fix-CI-errors ]
 
 jobs:
   test:
@@ -68,4 +68,5 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+          PYPI_REPOSITORY_URL: https://test.pypi.org/legacy/
         run: npx semantic-release 

@@ -13,8 +13,9 @@
 # limitations under the License.
 
 
-from requests_toolbelt.multipart.encoder import MultipartEncoder
 from typing import Dict, Tuple
+
+from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 
 def get_url(base_url: str, action: str, query_map: Dict[str, str]) -> str:

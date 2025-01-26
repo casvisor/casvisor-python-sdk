@@ -13,8 +13,10 @@
 # limitations under the License.
 
 import json
-from typing import Dict, Union, List, Tuple
+from typing import Dict, List, Tuple, Union
+
 import requests
+
 from . import util
 
 
