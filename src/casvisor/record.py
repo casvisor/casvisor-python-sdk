@@ -14,46 +14,47 @@
 
 import json
 from typing import Dict, List, Optional, Tuple
-from .base import BaseClient
+
 from . import util
+from .base import BaseClient, Response
 
 
 class Record:
     def __init__(
         self,
-        id: int,
-        owner: str,
-        name: str,
-        created_time: str,
-        organization: str,
-        client_ip: str,
-        user: str,
-        method: str,
-        request_uri: str,
-        action: str,
-        language: str,
-        object: str,
-        response: str,
-        provider: str,
-        block: str,
-        is_triggered: bool,
+        createdTime: Optional[str] = None,
+        organization: Optional[str] = None,
+        clientIp: Optional[str] = None,
+        user: Optional[str] = None,
+        method: Optional[str] = None,
+        requestUri: Optional[str] = None,
+        action: Optional[str] = None,
+        language: Optional[str] = None,
+        object: Optional[str] = None,
+        response: Optional[str] = None,
+        provider: Optional[str] = None,
+        block: Optional[str] = None,
+        isTriggered: Optional[bool] = None,
+        id: Optional[int] = None,
+        owner: Optional[str] = None,
+        name: Optional[str] = None,
     ):
         self.id = id
         self.owner = owner
         self.name = name
-        self.created_time = created_time
+        self.createdTime = createdTime
         self.organization = organization
-        self.client_ip = client_ip
+        self.clientIp = clientIp
         self.user = user
         self.method = method
-        self.request_uri = request_uri
+        self.requestUri = requestUri
         self.action = action
         self.language = language
         self.object = object
         self.response = response
         self.provider = provider
         self.block = block
-        self.is_triggered = is_triggered
+        self.isTriggered = isTriggered
 
     def to_dict(self) -> Dict:
         return self.__dict__
@@ -64,30 +65,30 @@ class Record:
 
 
 class _RecordSDK:
-    def __init__(self, base_client: BaseClient, organization_name: str):
-        self.base_client = base_client
-        self.organization_name = organization_name
+    def __init__(self, base_client: BaseClient, organizationName: str):
+        self.baseClient = base_client
+        self.organizationName = organizationName
 
     def get_records(self) -> List[Record]:
-        query_map = {"owner": self.organization_name}
-        url = util.get_url(self.base_client.endpoint, "get-records", query_map)
-        bytes = self.base_client.do_get_bytes(url)
+        query_map = {"owner": self.organizationName}
+        url = util.get_url(self.baseClient.endpoint, "get-records", query_map)
+        bytes = self.baseClient.do_get_bytes(url)
         return [Record.from_dict(record) for record in json.loads(bytes)]
 
     def get_record(self, name: str) -> Record:
-        query_map = {"id": f"{self.organization_name}/{name}"}
-        url = util.get_url(self.base_client.endpoint, "get-record", query_map)
-        bytes = self.base_client.do_get_bytes(url)
+        query_map = {"id": f"{self.organizationName}/{name}"}
+        url = util.get_url(self.baseClient.endpoint, "get-record", query_map)
+        bytes = self.baseClient.do_get_bytes(url)
         return Record.from_dict(json.loads(bytes))
 
     def get_pagination_records(
-        self, p: int, page_size: int, query_map: Dict[str, str]
+        self, p: int, pageSize: int, query_map: Dict[str, str]
     ) -> Tuple[List[Record], int]:
-        query_map["owner"] = self.organization_name
+        query_map["owner"] = self.organizationName
         query_map["p"] = str(p)
-        query_map["page_size"] = str(page_size)
-        url = util.get_url(self.base_client.endpoint, "get-records", query_map)
-        response = self.base_client.do_get_response(url)
+        query_map["pageSize"] = str(pageSize)
+        url = util.get_url(self.baseClient.endpoint, "get-records", query_map)
+        response = self.baseClient.do_get_response(url)
         return [Record.from_dict(record) for record in response.data], response.data2
 
     def update_record(self, record: Record) -> bool:
@@ -96,9 +97,9 @@ class _RecordSDK:
 
     def add_record(self, record: Record) -> bool:
         if not record.owner:
-            record.owner = self.organization_name
+            record.owner = self.organizationName
         if not record.organization:
-            record.organization = self.organization_name
+            record.organization = self.organizationName
         _, affected = self.modify_record("add-record", record, None)
         return affected
 
@@ -108,12 +109,12 @@ class _RecordSDK:
 
     def modify_record(
         self, action: str, record: Record, columns: Optional[List[str]]
-    ) -> Tuple[Dict, bool]:
+    ) -> Tuple[Response, bool]:
         query_map = {"id": f"{record.owner}/{record.name}"}
         if columns:
             query_map["columns"] = ",".join(columns)
         if not record.owner:
             record.owner = "admin"
         post_bytes = json.dumps(record.to_dict()).encode("utf-8")
-        resp = self.base_client.do_post(action, query_map, post_bytes, False, False)
-        return resp, resp["data"] == "Affected"
+        resp = self.baseClient.do_post(action, query_map, post_bytes, False, False)
+        return resp, resp.data == "Affected"

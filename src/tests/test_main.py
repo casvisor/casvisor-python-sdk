@@ -13,31 +13,39 @@
 # limitations under the License.
 
 import unittest
+
 from src.casvisor import BaseClient, CasvisorSDK
+from src.tests.test_util import (
+    TestApplication,
+    TestClientId,
+    TestClientSecret,
+    TestEndpoint,
+    TestOrganization,
+)
 
 
 class TestCasvisorSDK(unittest.TestCase):
     def test_casvisor_sdk_initialization(self):
         # Arrange
-        endpoint = "https://example.com"
-        client_id = "client123"
-        client_secret = "secret456"
-        organization_name = "org789"
-        application_name = "app012"
+        endpoint = TestEndpoint
+        client_id = TestClientId
+        client_secret = TestClientSecret
+        organization_name = TestOrganization
+        application_name = TestApplication
 
         # Act
         sdk = CasvisorSDK(
             endpoint=endpoint,
-            client_id=client_id,
-            client_secret=client_secret,
-            organization_name=organization_name,
-            application_name=application_name,
+            clientId=client_id,
+            clientSecret=client_secret,
+            organizationName=organization_name,
+            applicationName=application_name,
         )
 
         # Assert
         self.assertEqual(sdk.endpoint, endpoint)
-        self.assertEqual(sdk.client_id, client_id)
-        self.assertEqual(sdk.client_secret, client_secret)
-        self.assertEqual(sdk.organization_name, organization_name)
-        self.assertEqual(sdk.application_name, application_name)
-        self.assertIsInstance(sdk.base_client, BaseClient)
+        self.assertEqual(sdk.clientId, client_id)
+        self.assertEqual(sdk.clientSecret, client_secret)
+        self.assertEqual(sdk.organizationName, organization_name)
+        self.assertEqual(sdk.applicationName, application_name)
+        self.assertIsInstance(sdk.baseClient, BaseClient)

@@ -13,25 +13,25 @@
 # limitations under the License.
 
 import unittest
+
 import requests_mock
+
 from src.casvisor import BaseClient, Response
+from src.tests.test_util import TestClientId, TestClientSecret, TestEndpoint
 
 
 class TestBaseClient(unittest.TestCase):
     def test_base_client_do_get_response_success(self):
         # Arrange
-        client_id = "client123"
-        client_secret = "secret456"
-        endpoint = "https://example.com"
-        base_client = BaseClient(client_id, client_secret, endpoint)
-        mock_response = {"status": "ok", "msg": "Success", "data": [], "data2": []}
-        url = f"{endpoint}/api/action"
+        baseClient = BaseClient(TestClientId, TestClientSecret, TestEndpoint)
+        mockResponse = {"status": "ok", "msg": "Success", "data": [], "data2": []}
+        url = f"{TestEndpoint}/api/action"
 
         # Mock HTTP GET response
         with requests_mock.Mocker() as m:
-            m.get(url, json=mock_response)
+            m.get(url, json=mockResponse)
             # Act
-            response = base_client.do_get_response(url)
+            response = baseClient.do_get_response(url)
 
         # Assert
         self.assertIsInstance(response, Response)
@@ -42,40 +42,34 @@ class TestBaseClient(unittest.TestCase):
 
     def test_base_client_do_get_response_error(self):
         # Arrange
-        client_id = "client123"
-        client_secret = "secret456"
-        endpoint = "https://example.com"
-        base_client = BaseClient(client_id, client_secret, endpoint)
-        mock_response = {"status": "error", "msg": "Something went wrong"}
-        url = f"{endpoint}/api/action"
+        baseClient = BaseClient(TestClientId, TestClientSecret, TestEndpoint)
+        mockResponse = {"status": "error", "msg": "Something went wrong"}
+        url = f"{TestEndpoint}/api/action"
 
         # Mock HTTP GET response
         with requests_mock.Mocker() as m:
-            m.get(url, json=mock_response)
+            m.get(url, json=mockResponse)
             # Act & Assert
             with self.assertRaises(Exception) as context:
-                base_client.do_get_response(url)
+                baseClient.do_get_response(url)
             self.assertTrue("Something went wrong" in str(context.exception))
 
     def test_do_get_bytes(self):
         # Arrange
-        client_id = "client123"
-        client_secret = "secret456"
-        endpoint = "https://example.com"
-        base_client = BaseClient(client_id, client_secret, endpoint)
-        mock_response = {
+        baseClient = BaseClient(TestClientId, TestClientSecret, TestEndpoint)
+        mockResponse = {
             "status": "ok",
             "msg": "Success",
             "data": {"key": "value"},
             "data2": [],
         }
-        url = f"{endpoint}/api/action"
+        url = f"{TestEndpoint}/api/action"
 
         # Mock HTTP GET response
         with requests_mock.Mocker() as m:
-            m.get(url, json=mock_response)
+            m.get(url, json=mockResponse)
             # Act
-            result = base_client.do_get_bytes(url)
+            result = baseClient.do_get_bytes(url)
 
         # Assert
         self.assertIsInstance(result, bytes)
@@ -83,11 +77,8 @@ class TestBaseClient(unittest.TestCase):
 
     def test_do_post(self):
         # Arrange
-        client_id = "client123"
-        client_secret = "secret456"
-        endpoint = "https://example.com"
-        base_client = BaseClient(client_id, client_secret, endpoint)
-        mock_response = {
+        baseClient = BaseClient(TestClientId, TestClientSecret, TestEndpoint)
+        mockResponse = {
             "status": "ok",
             "msg": "Success",
             "data": "Affected",
@@ -96,8 +87,8 @@ class TestBaseClient(unittest.TestCase):
 
         # Act
         with requests_mock.Mocker() as m:
-            m.post(f"{endpoint}/api/action", json=mock_response)
-            response = base_client.do_post(
+            m.post(f"{TestEndpoint}/api/action", json=mockResponse)
+            response = baseClient.do_post(
                 "action", {"param": "value"}, b'{"test": "data"}', False, False
             )
 
@@ -108,11 +99,11 @@ class TestBaseClient(unittest.TestCase):
 
     def test_prepare_body_form(self):
         # Arrange
-        client = BaseClient("id", "secret", "endpoint")
-        post_bytes = b'{"field": "value"}'
+        baseClient = BaseClient(TestClientId, TestClientSecret, TestEndpoint)
+        postBytes = b'{"field": "value"}'
 
         # Act
-        content_type, body = client.prepare_body(post_bytes, True, False)
+        content_type, body = baseClient.prepare_body(postBytes, True, False)
 
         # Assert
         self.assertTrue(content_type.startswith("multipart/form-data"))

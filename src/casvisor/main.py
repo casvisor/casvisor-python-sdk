@@ -20,16 +20,16 @@ class CasvisorSDK(_RecordSDK):
     def __init__(
         self,
         endpoint: str,
-        client_id: str,
-        client_secret: str,
-        organization_name: str,
-        application_name: str,
+        clientId: str,
+        clientSecret: str,
+        organizationName: str,
+        applicationName: str,
     ):
         self.endpoint = endpoint
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.organization_name = organization_name
-        self.application_name = application_name
+        self.clientId = clientId
+        self.clientSecret = clientSecret
+        self.organizationName = organizationName
+        self.applicationName = applicationName
 
         # Initialize the base client
-        self.base_client = BaseClient(client_id, client_secret, endpoint)
+        self.baseClient = BaseClient(clientId, clientSecret, endpoint)

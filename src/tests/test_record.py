@@ -12,172 +12,102 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import time
 import unittest
-from src.casvisor import Record, BaseClient, _RecordSDK
-import requests_mock
+
+from src.casvisor import BaseClient, Record, _RecordSDK
+from src.tests.test_util import (
+    TestClientId,
+    TestClientSecret,
+    TestEndpoint,
+    TestOrganization,
+    get_random_name,
+)
 
 
 class TestRecord(unittest.TestCase):
-    def test_record_to_dict(self):
-        # Arrange
+    def test_record(self):
+        name = get_random_name("record")
+
+        timestamp = int(time.time())
+        tm = time.gmtime(timestamp)
+        createdTime = time.strftime("%Y-%m-%dT%H:%M:%SZ", tm)
+
+        # Create a new record
         record = Record(
-            id=1,
-            owner="org123",
-            name="record_name",
-            created_time="2023-10-01T12:00:00Z",
-            organization="org123",
-            client_ip="192.168.1.1",
-            user="user1",
-            method="GET",
-            request_uri="/api/endpoint",
-            action="view",
+            owner=TestOrganization,
+            name=name,
+            createdTime=createdTime,
+            organization=TestOrganization,
+            clientIp="120.85.97.21",
+            user="admin",
+            method="POST",
+            requestUri="/api/test_request_uri",
+            action="test_action",
+            object="test_object",
             language="en",
-            object="object1",
-            response="200 OK",
-            provider="provider1",
-            block="block1",
-            is_triggered=True,
+            response='{"status":"ok", "msg":"test_response"}',
+            isTriggered=True,
         )
 
-        # Act
-        record_dict = record.to_dict()
+        client = BaseClient(TestClientId, TestClientSecret, TestEndpoint)
+        sdk = _RecordSDK(client, TestOrganization)
 
-        # Assert
-        self.assertEqual(record_dict["id"], 1)
-        self.assertEqual(record_dict["owner"], "org123")
-        self.assertEqual(record_dict["name"], "record_name")
-        # Additional assertions as needed
+        # Add a new record
+        try:
+            result = sdk.add_record(record)
+        except Exception as e:
+            self.fail(f"Failed to add record: {e}")
 
-    def test_record_from_dict(self):
-        # Arrange
-        record_data = {
-            "id": 1,
-            "owner": "org123",
-            "name": "record_name",
-            "created_time": "2023-10-01T12:00:00Z",
-            "organization": "org123",
-            "client_ip": "192.168.1.1",
-            "user": "user1",
-            "method": "GET",
-            "request_uri": "/api/endpoint",
-            "action": "view",
-            "language": "en",
-            "object": "object1",
-            "response": "200 OK",
-            "provider": "provider1",
-            "block": "block1",
-            "is_triggered": True,
-        }
-
-        # Act
-        record = Record.from_dict(record_data)
-
-        # Assert
-        self.assertEqual(record.id, 1)
-        self.assertEqual(record.owner, "org123")
-        self.assertEqual(record.name, "record_name")
-        # Additional assertions as needed
-
-    def test_record_sdk_get_records(self):
-        # Arrange
-        client_id = "client123"
-        client_secret = "secret456"
-        endpoint = "https://example.com"
-        organization_name = "org123"
-        base_client = BaseClient(client_id, client_secret, endpoint)
-        sdk = _RecordSDK(base_client, organization_name)
-
-        self.assertIsInstance(sdk, _RecordSDK)
-
-    def test_get_records(self):
-        # Arrange
-        client_id = "client123"
-        client_secret = "secret456"
-        endpoint = "https://example.com"
-        organization_name = "org123"
-        base_client = BaseClient(client_id, client_secret, endpoint)
-        sdk = _RecordSDK(base_client, organization_name)
-
-        mock_response = {
-            "status": "ok",
-            "msg": "Success",
-            "data": [
-                {
-                    "id": 1,
-                    "owner": "org123",
-                    "name": "record1",
-                    "created_time": "2023-10-01T12:00:00Z",
-                    "organization": "org123",
-                    "client_ip": "192.168.1.1",
-                    "user": "user1",
-                    "method": "GET",
-                    "request_uri": "/api/endpoint",
-                    "action": "view",
-                    "language": "en",
-                    "object": "object1",
-                    "response": "200 OK",
-                    "provider": "provider1",
-                    "block": "block1",
-                    "is_triggered": True,
-                }
-            ],
-            "data2": [],
-        }
-
-        # Mock HTTP GET response
-        with requests_mock.Mocker() as m:
-            m.get(f"{endpoint}/api/get-records", json=mock_response)
-            # Act
+        # Get all records, check if our added record is inside the list
+        try:
             records = sdk.get_records()
+        except Exception as e:
+            self.fail(f"Failed to get records: {e}")
+        names = [item.name for item in records]
+        self.assertIn(name, names, "Added record not found in list")
 
-        # Assert
-        self.assertEqual(len(records), 1)
-        self.assertIsInstance(records[0], Record)
-        self.assertEqual(records[0].id, 1)
-        self.assertEqual(records[0].name, "record1")
+        # Get the record
+        try:
+            retrieved_record = sdk.get_record(name)
+        except Exception as e:
+            self.fail(f"Failed to get record: {e}")
+        self.assertEqual(
+            name, retrieved_record.name, "Retrieved record does not match added record"
+        )
 
-    def test_get_pagination_records(self):
-        # Arrange
-        client_id = "client123"
-        client_secret = "secret456"
-        endpoint = "https://example.com"
-        organization_name = "org123"
-        base_client = BaseClient(client_id, client_secret, endpoint)
-        sdk = _RecordSDK(base_client, organization_name)
+        # Update the record
+        updated_action = "updated_action"
+        retrieved_record.action = updated_action
+        try:
+            result = sdk.update_record(retrieved_record)
+        except Exception as e:
+            self.fail(f"Failed to update record: {e}")
+        self.assertTrue(result, "Failed to update record")
 
-        mock_response = {
-            "status": "ok",
-            "msg": "Success",
-            "data": [
-                {
-                    "id": 1,
-                    "owner": "org123",
-                    "name": "record1",
-                    "created_time": "2023-10-01T12:00:00Z",
-                    "organization": "org123",
-                    "client_ip": "192.168.1.1",
-                    "user": "user1",
-                    "method": "GET",
-                    "request_uri": "/api/endpoint",
-                    "action": "view",
-                    "language": "en",
-                    "object": "object1",
-                    "response": "200 OK",
-                    "provider": "provider1",
-                    "block": "block1",
-                    "is_triggered": True,
-                }
-            ],
-            "data2": 10,  # total count
-        }
+        # Validate the update
+        try:
+            updated_record = sdk.get_record(name)
 
-        # Mock HTTP GET response
-        with requests_mock.Mocker() as m:
-            m.get(f"{endpoint}/api/get-records", json=mock_response)
-            # Act
-            records, total = sdk.get_pagination_records(1, 10, {})
+        except Exception as e:
+            self.fail(f"Failed to get record: {e}")
+        self.assertEqual(
+            updated_action,
+            updated_record.action,
+            "Failed to update record, action mismatch",
+        )
 
-        # Assert
-        self.assertEqual(len(records), 1)
-        self.assertEqual(total, 10)
-        self.assertIsInstance(records[0], Record)
+        # Delete the record
+        try:
+            result = sdk.delete_record(record)
+        except Exception as e:
+            self.fail(f"Failed to delete record: {e}")
+        self.assertTrue(result, "Failed to delete record")
+
+        # Validate the deletion
+        try:
+            records = sdk.get_records()
+        except Exception as e:
+            self.fail(f"Failed to get records: {e}")
+        names = [item.name for item in records]
+        self.assertNotIn(name, names, "Failed to delete record, it's still in the list")
