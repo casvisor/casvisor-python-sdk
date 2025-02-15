@@ -108,3 +108,37 @@ class TestBaseClient(unittest.TestCase):
         # Assert
         self.assertTrue(content_type.startswith("multipart/form-data"))
         self.assertIsInstance(body, bytes)
+
+    def test_prepare_body_file(self):
+        baseClient = BaseClient(TestClientId, TestClientSecret, TestEndpoint)
+        file_content = b"test file content"
+
+        content_type, body = baseClient.prepare_body(file_content, True, True)
+
+        self.assertTrue(content_type.startswith("multipart/form-data"))
+        self.assertIsInstance(body, bytes)
+        self.assertIn(b"test file content", body)
+
+    def test_do_get_bytes_raw_without_check(self):
+        baseClient = BaseClient(TestClientId, TestClientSecret, TestEndpoint)
+        mock_response = b'{"key": "value"}'
+        url = f"{TestEndpoint}/api/test"
+
+        with requests_mock.Mocker() as m:
+            m.get(url, content=mock_response)
+            result = baseClient.do_get_bytes_raw_without_check(url)
+
+        self.assertEqual(result, mock_response)
+
+    def test_do_post_bytes_raw(self):
+        baseClient = BaseClient(TestClientId, TestClientSecret, TestEndpoint)
+        mock_response = b'{"status": "success"}'
+        url = f"{TestEndpoint}/api/test"
+        content_type = "application/json"
+        body = b'{"test": "data"}'
+
+        with requests_mock.Mocker() as m:
+            m.post(url, content=mock_response)
+            result = baseClient.do_post_bytes_raw(url, content_type, body)
+
+        self.assertEqual(result, mock_response)

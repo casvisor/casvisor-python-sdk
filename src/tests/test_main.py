@@ -49,3 +49,32 @@ class TestCasvisorSDK(unittest.TestCase):
         self.assertEqual(sdk.organizationName, organization_name)
         self.assertEqual(sdk.applicationName, application_name)
         self.assertIsInstance(sdk.baseClient, BaseClient)
+
+    def test_casvisor_sdk_inheritance(self):
+        sdk = CasvisorSDK(
+            endpoint=TestEndpoint,
+            clientId=TestClientId,
+            clientSecret=TestClientSecret,
+            organizationName=TestOrganization,
+            applicationName=TestApplication,
+        )
+
+        self.assertTrue(hasattr(sdk, "get_records"))
+        self.assertTrue(hasattr(sdk, "get_record"))
+        self.assertTrue(hasattr(sdk, "add_record"))
+        self.assertTrue(hasattr(sdk, "update_record"))
+        self.assertTrue(hasattr(sdk, "delete_record"))
+
+    def test_casvisor_sdk_base_client_initialization(self):
+        sdk = CasvisorSDK(
+            endpoint=TestEndpoint,
+            clientId=TestClientId,
+            clientSecret=TestClientSecret,
+            organizationName=TestOrganization,
+            applicationName=TestApplication,
+        )
+
+        self.assertIsInstance(sdk.baseClient, BaseClient)
+        self.assertEqual(sdk.baseClient.endpoint, TestEndpoint)
+        self.assertEqual(sdk.baseClient.clientId, TestClientId)
+        self.assertEqual(sdk.baseClient.clientSecret, TestClientSecret)
